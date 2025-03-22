@@ -1,0 +1,12 @@
+name: knn
+
+dependencies:
+  - numpy
+  - toolz
+  - matplotlib
+  - dill
+  - pandas
+  - partd
+  - bokeh
+  - pytesseract
+  - scikit-learn
