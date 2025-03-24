@@ -5,29 +5,15 @@ from marshal import loads
 import os
 from pytesseract.pytesseract import tesseract_cmd
 import pytesseract
-
-tesseract_models_folder = "../tesseract-models/"
-pytesseract.pytesseract.tesseract_cmd = '/storage/brno2/home/xvlkja07/local/bin/tesseract'
-
-# Open and load JSON file
-data = {}
-with open('data.json') as f:
-    data = json.load(f)
-
-# Convert JSON to pandas DataFrame
-df = pd.DataFrame(data)
-
-# Drop columns with names
-df = df.drop(columns=['updated_at', "drafts", "comment_authors", "comment_count", "last_comment_updated_at",
-                      "unresolved_comment_count", "total_annotations", 'total_predictions', "cancelled_annotations"])
-df["data"]
-
-# %%
-# Take only first 10 rows
 import concurrent.futures
 import json
 from PIL import Image
 import pytesseract
+
+# tesseract_models_folder = "../tesseract-models/"
+tesseract_models_folder = "../tesseract-models/"
+pytesseract.pytesseract.tesseract_cmd = '/storage/brno2/home/xvlkja07/local/bin/tesseract'
+
 
 def process_row(row):
     local_wrong_count = 0
@@ -49,7 +35,7 @@ def process_row(row):
 
     # Process each annotation block
     # # TODO:
-    # - [] parser diffreent data diffrently (cislo strany, cislo kapitoly, nazev urovně etc.)
+    # - [] parser diffreent data diffrently (cislo strany, cislo kapitoly, nazev urovně)
     # - [] add data without relation to the relationed data
     for a in annotations:
         ocred_data = {}
@@ -98,6 +84,8 @@ def process_row(row):
                     ocred_data[ann.get("id")] = {
                         "text": text.strip(),
                         "label": label,
+                        "cors": [left, upper, right, lower],
+                        "type": label
                     }
 
         local_chapters[img_name] = []
@@ -114,23 +102,40 @@ def process_row(row):
 
     return (img_name, local_chapters, local_wrong_count)
 
-# Main program run
-chapters = {}
-total_wrong_text = 0
-cpu_count = os.cpu_count()
-print(f"CPU count: {cpu_count}")
 
-# Use ThreadPoolExecutor for parallel processing
-with concurrent.futures.ThreadPoolExecutor(max_workers=cpu_count) as executor:
-    futures = [executor.submit(process_row, row) for index, row in df.iterrows()]
-    for future in concurrent.futures.as_completed(futures):
-        img_name, local_chapters, local_wrong_count = future.result()
-        if img_name is not None:
-            chapters.update(local_chapters)
-            total_wrong_text += local_wrong_count
+def main():
+    with open('data.json') as f:
+        data = json.load(f)
 
-print(f"Total number of images with text errors: {total_wrong_text}")
+    # Convert JSON to pandas DataFrame
+    df = pd.DataFrame(data)
 
-# Save results to file
-with open("chapters.json", "w") as f:
-    json.dump(chapters, f)
+    # Drop columns with names
+    df = df.drop(columns=['updated_at', "drafts", "comment_authors", "comment_count", "last_comment_updated_at",
+                          "unresolved_comment_count", "total_annotations", 'total_predictions',
+                          "cancelled_annotations"])
+    # Main program run
+    chapters = {}
+    total_wrong_text = 0
+    # cpu_count = os.cpu_count()
+    cpu_count = 1
+    print(f"CPU count: {cpu_count}")
+
+    # Use ThreadPoolExecutor for parallel processing
+    with concurrent.futures.ThreadPoolExecutor(max_workers=cpu_count) as executor:
+        futures = [executor.submit(process_row, row) for index, row in df.iterrows()]
+        for future in concurrent.futures.as_completed(futures):
+            img_name, local_chapters, local_wrong_count = future.result()
+            if img_name is not None:
+                chapters.update(local_chapters)
+                total_wrong_text += local_wrong_count
+
+    print(f"Total number of images with text errors: {total_wrong_text}")
+
+    # Save results to file
+    with open("chapters.json", "w") as f:
+        json.dump(chapters, f)
+
+
+if __name__ == "__main__":
+    main()

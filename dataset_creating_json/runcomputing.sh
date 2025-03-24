@@ -7,11 +7,11 @@
 # source conda init
 source /storage/brno2/home/xvlkja07/.bashrc
 
-# mamba env create -f /storage/brno2/home/xvlkja07/KNN/conda-knn.yml --prefix /storage/brno2/home/xvlkja07/KNN/knn
+# mamba env create -f /storage/brno2/home/xvlkja07/KNN/conda-knn-donut.yml --prefix /storage/brno2/home/xvlkja07/KNN/knn
 
 # module add tesseract
 module add mambaforge
-# mamba env create -f /storage/brno2/home/xvlkja07/KNN/conda-knn.yml
+# mamba env create -f /storage/brno2/home/xvlkja07/KNN/conda-knn-donut.yml
 mamba activate /storage/brno2/home/xvlkja07/KNN/dataset_creating_json/knn
 
 HOMEDIR=/storage/brno2/home/xvlkja07/dataset_creating_json/KNN/
