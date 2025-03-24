@@ -1,0 +1,22 @@
+name: knn-donut
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+
+dependencies:
+  - numpy
+  - toolz
+  - matplotlib
+  - pandas
+  - cudatoolkit
+  - scikit-learn
+  - pytorch
+  - torchvision
+  - pytorch-lightning
+  - timm
+  - transformers
+  - pip:
+        - donut-python
+
