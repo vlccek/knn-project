@@ -82,18 +82,15 @@ training_args = TrainingArguments(
     evaluation_strategy="no",
     save_steps=1000,
     logging_steps=100,
-    fp16=torch.cuda.is_available(),  # pokud máte GPU s podporou fp16
+    fp16=torch.cuda.is_available(),
 )
 
-# Vytvoření Trainer instance
 trainer = Trainer(
     model=model,
     args=training_args,
     train_dataset=dataset,
-    # případně definujte data collator, pokud je potřeba (např. custom funkci)
 )
 
 trainer.train()
 
-# Uložte model (váhy a konfiguraci)
 model.save_pretrained(output_dir)

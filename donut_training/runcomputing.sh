@@ -1,8 +1,8 @@
 #!/bin/bash
 #PBS -N OCR-DONUT-TRAINING
-#PBS -l walltime=2:0:0
+#PBS -l walltime=4:0:0
 #PBS -q default@pbs-m1.metacentrum.cz
-#PBS -l select=1:ncpus=32:ngpus=1:mem=128gb:gpu_mem=16gb:scratch_local=400mb
+#PBS -l select=1:ncpus=32:ngpus=1:mem=512gb:gpu_mem=16gb:scratch_local=400mb
 
 # source conda init
 source /storage/brno2/home/xvlkja07/.bashrc
