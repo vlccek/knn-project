@@ -7,35 +7,24 @@ from transformers import DonutProcessor, VisionEncoderDecoderModel, TrainingArgu
 from datasets import load_dataset
 import torch
 
-# Define directories for responses (annotations) and images
-responses_directory = "../dataset_creating_json/responses"
-image_directory = "../img/images"
+IMG_IMAGES_DIR = "../img/images"
 
-# List all files in the responses directory (annotations)
-target_paths = os.listdir(responses_directory)
+RESPONSES_DIR = "../dataset_creating_json/responses"
 
-# Generate image file paths by replacing ".json" with ".jpg"
-image_paths = [os.path.join(image_directory, path.split(".json")[0] + ".jpg") for path in target_paths]
+OUTPUT_DIR_MODEL = "./my_finetuned_donut_model"
 
-# Prepend the responses directory path to annotation files
-target_paths = [os.path.join(responses_directory, path) for path in target_paths]
-
-data = {
-    "image_path": image_paths,
-    "target_path": target_paths,
-}
-
-dataset = Dataset.from_dict(data)
 
 # Load the processor and model (Donut)
 processor = DonutProcessor.from_pretrained("naver-clova-ix/donut-base", use_fast=True)
+# Load the model
+model = VisionEncoderDecoderModel.from_pretrained("naver-clova-ix/donut-base")
+
 
 
 # Filter function to keep only examples where both image and annotation files exist
 def filter_existing(example):
     return os.path.exists(example["image_path"]) and os.path.exists(example["target_path"])
 
-dataset = dataset.filter(filter_existing)
 
 # Preprocessing function that converts data into a format suitable for training:
 def preprocess_function(example):
@@ -61,36 +50,54 @@ def preprocess_function(example):
 
     return {"pixel_values": pixel_values, "labels": labels}
 
-# Apply preprocessing to the entire dataset
-dataset = dataset.map(preprocess_function)
 
-output_dir = "./my_finetuned_donut_model"
+def main():
 
-processor.save_pretrained(output_dir)
+    responses_directory = RESPONSES_DIR
+    image_directory = IMG_IMAGES_DIR
 
-print("Preprocessing done.")
+    # List all files in the responses directory (annotations)
+    target_paths = os.listdir(responses_directory)
 
+    # Generate image file paths by replacing ".json" with ".jpg"
+    image_paths = [os.path.join(image_directory, path.split(".json")[0] + ".jpg") for path in target_paths]
 
-# Load the model
-model = VisionEncoderDecoderModel.from_pretrained("naver-clova-ix/donut-base")
+    # Prepend the responses directory path to annotation files
+    target_paths = [os.path.join(responses_directory, path) for path in target_paths]
 
-training_args = TrainingArguments(
-    output_dir="./donut-finetuned",
-    num_train_epochs=3,
-    per_device_train_batch_size=4,
-    gradient_accumulation_steps=2,
-    evaluation_strategy="no",
-    save_steps=1000,
-    logging_steps=100,
-    fp16=torch.cuda.is_available(),
-)
+    data = {
+        "image_path": image_paths,
+        "target_path": target_paths,
+    }
 
-trainer = Trainer(
-    model=model,
-    args=training_args,
-    train_dataset=dataset,
-)
+    dataset = Dataset.from_dict(data)
 
-trainer.train()
+    dataset = dataset.filter(filter_existing)
 
-model.save_pretrained(output_dir)
+    # Apply preprocessing to the entire dataset
+    dataset = dataset.map(preprocess_function)
+
+    processor.save_pretrained(OUTPUT_DIR_MODEL)
+
+    print("Preprocessing done.")
+
+    training_args = TrainingArguments(
+        output_dir="./donut-finetuned",
+        num_train_epochs=3,
+        per_device_train_batch_size=4,
+        gradient_accumulation_steps=2,
+        evaluation_strategy="no",
+        save_steps=1000,
+        logging_steps=100,
+        fp16=torch.cuda.is_available(),
+    )
+
+    trainer = Trainer(
+        model=model,
+        args=training_args,
+        train_dataset=dataset,
+    )
+
+    trainer.train()
+
+    model.save_pretrained(OUTPUT_DIR_MODEL)
