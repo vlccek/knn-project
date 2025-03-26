@@ -7,6 +7,8 @@ from transformers import DonutProcessor, VisionEncoderDecoderModel, TrainingArgu
 from datasets import load_dataset
 import torch
 
+testing = True # Creates very small dataset for testing
+
 IMG_IMAGES_DIR = "../img/images"
 
 RESPONSES_DIR = "../dataset_creating_json/responses"
@@ -44,28 +46,28 @@ class CustomDataCollator:
         return {"pixel_values": pixel_values, "labels": padded_labels}
 
 
-def preprocess_function(batch):
-    # Load images
-    images = [Image.open(path).convert("RGB") for path in batch["image_path"]]
-    pixel_values = processor(images, return_tensors="pt").pixel_values
+def preprocess_function(example):
+    # Load the image - the key "image_path" contains the path to the image file
+    image = Image.open(example["image_path"]).convert("RGB")
+    pixel_values = processor(image, return_tensors="pt").pixel_values[0]
 
-    labels = []
-    for file in batch["target_path"]:
-        annotation_file = file
-        if not os.path.exists(annotation_file):
-            continue  # file not exists
-        with open(annotation_file, "r", encoding="utf-8") as f:
-            annotation_data = json.load(f)
-        target_text = json.dumps(annotation_data)
-        tokenized = processor.tokenizer(
-            target_text,
-            add_special_tokens=True,
-            truncation=True,
-            padding="max_length"
-        ).input_ids
-        labels.append(tokenized)
+    # Load the annotation - the key "target_path" contains the path to the JSON annotation file
+    annotation_file = example["target_path"]
+    with open(annotation_file, "r", encoding="utf-8") as f:
+        annotation_data = json.load(f)
+
+    # Convert the annotation (JSON) to a string - adjust the format as needed for training
+    target_text = json.dumps(annotation_data)
+
+    # Tokenize the text
+    labels = processor.tokenizer(
+        target_text,
+        add_special_tokens=True,
+        truncation=True,
+        padding="max_length"
+    ).input_ids
+
     return {"pixel_values": pixel_values, "labels": labels}
-
 
 def is_processed_dataset_available(path):
     return False ## tmp for testing :)
@@ -88,7 +90,10 @@ def main():
     if not (is_processed_dataset_available(OUTPUT_DIR_MODEL)):
         print("Preprocessing dataset...")
         # List all files in the responses directory (annotations)
-        target_paths = os.listdir(responses_directory)[0:10]
+        if testing:
+            target_paths = os.listdir(responses_directory)[0:10]
+        else:
+            target_paths = os.listdir(responses_directory)
 
         # Generate image file paths by replacing ".json" with ".jpg"
         image_paths = [os.path.join(image_directory, path.split(".json")[0] + ".jpg") for path in target_paths]
