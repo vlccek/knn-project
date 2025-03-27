@@ -1,8 +1,8 @@
 #!/bin/bash
 #PBS -N KNN-DONUT-TRAINING
-#PBS -l walltime=00:30:0
+#PBS -l walltime=00:07:0
 #PBS -q gpu@pbs-m1.metacentrum.cz
-#PBS -l select=1:ncpus=8:ngpus=1:mem=128gb:gpu_mem=16gb:scratch_ssd=40000mb
+#PBS -l select=1:ncpus=4:ngpus=1:mem=128gb:gpu_mem=16gb:scratch_ssd=40000mb
 
 
 # Vytvoření unikátního adresáře na scratch
