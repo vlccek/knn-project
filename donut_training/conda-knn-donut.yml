@@ -15,10 +15,12 @@ dependencies:
   - pytorch
   - torchvision
   - pytorch-lightning
-  - timm
+  - timm=0.5.4
   - transformers
   - protobuf
+  - datasets
+  - nltk
   - pip:
-        - donut-python
-        - transformers[torch]
-
+      - donut-python
+      - sconf
+      - zss
