@@ -12,15 +12,17 @@ dependencies:
   - pandas
   - cudatoolkit
   - scikit-learn
-  - pytorch
-  - torchvision
   - pytorch-lightning
   - timm=0.5.4
   - transformers
   - protobuf
-  - datasets
   - nltk
   - pip:
       - donut-python
       - sconf
       - zss
+      - tensorboard
+      - tensorboardX
+      - torch
+      - torchvision
+      - datasets
