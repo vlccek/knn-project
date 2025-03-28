@@ -29,7 +29,7 @@ def main():
         metadata_files[split] = open(metadata_path, "w", encoding="utf-8")
 
     # Get list of response files
-    response_files = [f for f in os.listdir(RESPONSES_DIR) if f.endswith(".json")][:20]
+    response_files = [f for f in os.listdir(RESPONSES_DIR) if f.endswith(".json")][:100]
     random.shuffle(response_files)
     total = len(response_files)
 
@@ -54,6 +54,10 @@ def main():
             try:
                 with open(response_path, "r", encoding="utf-8") as f:
                     ground_truth_data = json.load(f)
+
+                if not ground_truth_data:
+                    print(f"No ground truth data for {image_file_name}")
+                    continue
                 record = {
                     "file_name": image_file_name,
                     "ground_truth": json.dumps({"gt_parse": {"result" : ground_truth_data}})
