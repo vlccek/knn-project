@@ -1,16 +1,22 @@
-# Data
+# Project Overview: Donut Model Dataset Creation, Analysis, and KNN Integration
 
-*   Download the JSON file from Label Studio and rename it to `data.json`.
+This repository is focused on creating, analyzing, and verifying datasets for use with Document Understanding Transformer (Donut) models.
 
-# Running the script on Metacentrum
+## Files and Their Purpose
 
-1.  Create a new environment: `# mamba env create -f /storage/brno2/home/xvlkja07/KNN/dataset_creating_json/conda-knn.yml --prefix /storage/brno2/home/xvlkja07/KNN/dataset_creating_json/knn`
-2.  Compile or download the Tesseract binary to the path `/storage/brno2/home/xvlkja07/local/bin/tesseract`. Alternatively, you can change the path in the `createDataset.py` file (or use the binary compiled by me).
-3.  Run the script using `qrun runcomputing.sh`.
+*   **`analyze_dataset_donut.ipynb`:** A Jupyter Notebook designed to analyze the structure and content of datasets generated for Donut models used for getting statistics and visualizations. 
 
-# Invalid Dates
+*   **`conda-knn.yml`:** A Conda environment file. This file specifies the dependencies needed to create a Conda virtual environment.
 
-*   Images that were not correctly processed by OCR are located in the `../img/problematic/` directory.
+*   **`createDataset.py`:** A Python script responsible for generating a dataset by infromation from anotations and OCR. 
 
+*   **`createDatasetDonutFormat.py`:** Takes output from gemini API and creates a dataset in the format required by Donut models.
 
+*   **`createDatasetGemmini.py`:** A Python script for creating dataset by gemini API.
+
+*   **`readme.md`:** This file (the one you're reading now) provides an overview of the project, its files, and how to use them.
+
+*   **`runcomputing.sh`:** A shell script for deploying the solution on metacentrum.
+
+*   **`verifyDataset.py`:** A Python script used to verify the integrit generated datasets. This script might perform checks for missing values, data inconsistencies, and adherence to predefined schemas.
 
