@@ -94,7 +94,7 @@ def process_image(image_path, prompt, output_directory):
 
             if os.path.basename(image_path).split(".jpg")[0] + ".json" in os.listdir(output_directory):
                 print(f"Response for {image_path} already exists.")
-                return
+                return 1
 
         response = send_to_ai_studio(image_base64, prompt)
 
@@ -111,10 +111,13 @@ def process_image(image_path, prompt, output_directory):
 
         else:
             print(f"Processing image {image_path} failed.")
+            return None
 
     except Exception as e:
         print(f"Error processing {image_path}: {e}")
 
+
+import time
 
 def main():
     """Main function for iterating through images and processing them."""
@@ -127,9 +130,15 @@ def main():
 
         if os.path.isfile(file_path) and is_image(file_path):
             print(f"Processing {file_name}...")
-            process_image(file_path, PROMPT, OUTPUT_DIRECTORY)
+            output = process_image(file_path, PROMPT, OUTPUT_DIRECTORY)
+            if output  == 1:
+                continue
+            time.sleep(5)
         else:
             print(f"Skipping {file_name} (not a file or not an image).")
+
+        # wait for 5s
+
 
 if __name__ == "__main__":
     # Example usage
