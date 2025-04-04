@@ -1,4 +1,6 @@
-# Project: End-to-End Document Understanding with Donut
+# Project KNN - sementic abstraction of headings
+
+*Advanced course on BUT FIT about NN and ML.* 
 
 This repository provides a comprehensive pipeline for creating datasets, training Document Understanding Transformer (Donut) models, and deploying them for inference. The project is organized into several key directories, each addressing a distinct aspect of the Donut workflow.
 
