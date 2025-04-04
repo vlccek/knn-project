@@ -1,19 +1,16 @@
-# Folder Files Overview
+# Data
 
-This directory contains the following files, related to dataset creating for KNN project.
+*   Download the JSON file from Label Studio and rename it to `data.json`.
 
-* **`conda-knn.yml`:** A Conda environment file. This file lists the dependencies required to run the KNN portion of the
-  project and create a Conda virtual environment. Used to test the tesseract OCR.
+# Running the script on Metacentrum
 
-* **`createDataset.py`:** A Python script responsible for creating a dataset. File for creating datataset by using
-  tesseract OCR.
+1.  Create a new environment: `# mamba env create -f /storage/brno2/home/xvlkja07/KNN/dataset_creating_json/conda-knn.yml --prefix /storage/brno2/home/xvlkja07/KNN/dataset_creating_json/knn`
+2.  Compile or download the Tesseract binary to the path `/storage/brno2/home/xvlkja07/local/bin/tesseract`. Alternatively, you can change the path in the `createDataset.py` file (or use the binary compiled by me).
+3.  Run the script using `qrun runcomputing.sh`.
 
-* **`createDatasetDonutFormat.py`:** Takes the dataset created by `createDatasetGemmini.py` and converts this to DONUT
-  format dataset. Ouput in dataset folder
+# Invalid Dates
 
-* **`createDatasetGemmini.py`:** From pictures in ../img/ creates ./response/ folder by gemini API.
+*   Images that were not correctly processed by OCR are located in the `../img/problematic/` directory.
 
-* **`runcomputing.sh`:** A shell script that runs the `createDataset.py` script on metacentrum.
 
-* **`verifyDataset.py`:** A Python script for verifying the integrity of the dataset. This might involve checking for
-  missing values, data consistency, or distribution characteristics.
+
