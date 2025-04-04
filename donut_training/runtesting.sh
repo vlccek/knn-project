@@ -22,4 +22,4 @@ cd ${SCRATCH_DIR}/donut
 
 python test.py --dataset_name_or_path './dataset/' --pretrained_model_name_or_path /storage/brno2/home/xvlkja07/KNN/donut_training/result/train_cord/test_experiment --save_path ./result/output.json
 
-# python test.py --dataset_name_or_path '/storage/brno2/home/xvlkja07/KNN/donut/dataset' --pretrained_model_name_or_path /storage/brno2/home/xvlkja07/KNN/donut_training/result/train_cord/test_experiment --save_path ./result/output.json
+# python test.py --dataset_name_or_path '/storage/brno2/home/xvlkja07/KNN/donut/dataset' --pretrained_model_name_or_path /storage/brno2/home/xvlkja07/KNN/donut_training/result2/train_cord/test_experiment --save_path ./result/output.json
