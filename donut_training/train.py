@@ -3,30 +3,33 @@ import os
 import json
 from datasets import Dataset, load_from_disk
 from PIL import Image
-from transformers import DonutProcessor, VisionEncoderDecoderModel, TrainingArguments, Trainer, DataCollatorForSeq2Seq, PreTrainedTokenizerBase
+from transformers import DonutProcessor, VisionEncoderDecoderModel, TrainingArguments, Trainer, DataCollatorForSeq2Seq, \
+    PreTrainedTokenizerBase
 from datasets import load_dataset
 import torch
 
-testing = True # Creates very small dataset for testing
+testing = True  # Creates very small dataset for testing
 
 IMG_IMAGES_DIR = "../img/images"
 
 RESPONSES_DIR = "../dataset_creating_json/responses"
 
-OUTPUT_DIR_MODEL = "./my_finetuned_donut_model"
+OUTPUT_DIR_MODEL = "./preprocesd/dataset"
 
 # Load the processor and model (Donut)
-processor = DonutProcessor.from_pretrained("naver-clova-ix/donut-base", use_fast=True)
+processor = DonutProcessor.from_pretrained("naver-clova-ix/donut-base-finetuned-cord-v2", use_fast=True)
 # Load the model
-model = VisionEncoderDecoderModel.from_pretrained("naver-clova-ix/donut-base")
+model = VisionEncoderDecoderModel.from_pretrained("naver-clova-ix/donut-base-finetuned-cord-v2")
 
 
 # Filter function to keep only examples where both image and annotation files exist
 def filter_existing(example):
     return os.path.exists(example["image_path"]) and os.path.exists(example["target_path"])
 
+
 class CustomDataCollator:
     def __init__(self, tokenizer: PreTrainedTokenizerBase, padding="longest"):
+        model.config.decoder_start_token_id = tokenizer.bos_token_id
         self.tokenizer = tokenizer
         self.padding = padding
 
@@ -69,8 +72,9 @@ def preprocess_function(example):
 
     return {"pixel_values": pixel_values, "labels": labels}
 
+
 def is_processed_dataset_available(path):
-    return False ## tmp for testing :)
+    return False  ## tmp for testing :)
 
     # Required files created by save_to_disk
     required_files = ["added_tokens.json", "preprocessor_config.json", "sentencepiece.bpe.model",
@@ -123,12 +127,12 @@ def main():
 
     print("Preprocessing done.")
 
-    print(f"{('-'*20)} Training the model...  {'-' * 20}")
+    print(f"{('-' * 20)} Training the model...  {'-' * 20}")
 
     data_collator = CustomDataCollator(tokenizer=processor.tokenizer)
 
     training_args = TrainingArguments(
-        output_dir="./donut-finetuned",
+        output_dir=OUTPUT_DIR_MODEL,
         num_train_epochs=3,
         per_device_train_batch_size=4,
         gradient_accumulation_steps=2,
@@ -152,4 +156,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
