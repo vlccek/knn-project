@@ -8,6 +8,7 @@ from LayoutProcessor import LayoutProcessor
 import sys
 import math
 import numpy as np
+import os
 
 
 class Ocr2JsonSettings:
@@ -161,42 +162,75 @@ def map_repr_json(obj):
 if __name__ == "__main__":
     ocr_folder = sys.argv[1]
     image_folder = sys.argv[2]
-    output_folder = "./output"
 
-    image_data = PeroProcessor().prepare_layout_input(ocr_folder, image_folder)
+    for image_file in os.listdir(image_folder):
+        print("Processing " + str(image_file))
+        if image_file.endswith((".png", ".jpg", ".jpeg")):
+            image_path = os.path.join(image_folder, image_file)
+            
+            image_data = PeroProcessor().prepare_layout_input(ocr_folder, image_path)
 
-    preds, image = LayoutProcessor().process_image_by_layout(image_data)
-    # image.save("layout_processed_image.jpg")
-    tokens = image_data["tokens"]
-    bboxes = image_data["bboxes"]
+            # batch processing of long sequences
+            if len(image_data["tokens"]) > 200:
+                max_tokens = 200
+                all_preds = []
+                
+                num_batches = (len(image_data["tokens"]) + max_tokens - 1) // max_tokens
 
-    cleaned = [(class_name, bbox, token) for class_name, bbox, token in zip(preds, bboxes, tokens) if
-               class_name != "trash"]
+                for i in range(num_batches):
+                    start_idx = i * max_tokens
+                    end_idx = min((i + 1) * max_tokens, len(image_data["tokens"]))
+                    
+                    batch_image_data = {
+                        "tokens": image_data["tokens"][start_idx:end_idx],
+                        "bboxes": image_data["bboxes"][start_idx:end_idx],
+                        "image_path": image_path
+                    }
 
-    avg_line_height = avg_line_height(cleaned)  # Average line height,
+                    preds, image = LayoutProcessor().process_image_by_layout(batch_image_data)
+                    all_preds.extend(preds)
 
-    headings = merge_title_words(cleaned, "kapitola")
-    heading_scd = merge_title_words(cleaned, "jiny nadpis")
-    page_number = merge_title_words(cleaned, "cislo strany")
-    chapter_number = merge_title_words(cleaned, "jine cislo")
+                    image.save(f"layout_processed_image_{image_file}_{i}.jpg")
+                
+                preds = all_preds
+                print(f"Prediction for {image_file} (total): {all_preds}")
+            else:
+                preds, image = LayoutProcessor().process_image_by_layout(image_data)
+                image.save(f"layout_processed_image_{image_file}.jpg")
+                
+            print(f"Prediction for {image_file}: {preds}")
+    
+        # image.save("layout_processed_image.jpg")
+        tokens = image_data["tokens"]
+        bboxes = image_data["bboxes"]
 
-    heading_main = match_heading_page_chapter(headings, page_number, chapter_number)
+        cleaned = [(class_name, bbox, token) for class_name, bbox, token in zip(preds, bboxes, tokens) if
+                class_name != "trash"]
 
-    json_data = []
+        avg_line_height2 = avg_line_height(cleaned)  # Average line height,
 
-    for i, obj in enumerate(heading_main):
-        json_data.append(map_repr_json(obj))
+        headings = merge_title_words(cleaned, "kapitola")
+        heading_scd = merge_title_words(cleaned, "jiny nadpis")
+        page_number = merge_title_words(cleaned, "cislo strany")
+        chapter_number = merge_title_words(cleaned, "jine cislo")
+
+        heading_main = match_heading_page_chapter(headings, page_number, chapter_number)
+
+        json_data = []
+
+        for i, obj in enumerate(heading_main):
+            json_data.append(map_repr_json(obj))
 
 
-    heading_scd = match_heading_page_chapter(heading_scd, page_number, chapter_number)
+        heading_scd = match_heading_page_chapter(heading_scd, page_number, chapter_number)
 
-    for i in heading_scd:
-        h, page, chapter = i
+        for i in heading_scd:
+            h, page, chapter = i
 
-        parent_index = find_nearest(h, headings)
+            parent_index = find_nearest(h, headings)
 
-        json_data[parent_index]["children"].append(map_repr_json(i))
+            json_data[parent_index]["children"].append(map_repr_json(i))
 
-    print(json.dumps(json_data))
+        print(json.dumps(json_data))
 
 

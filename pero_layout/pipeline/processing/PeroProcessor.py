@@ -52,22 +52,21 @@ class PeroProcessor:
         
         return normalized_bboxes
 
-    def prepare_layout_input(self, ocr_folder, image_folder):
+    def prepare_layout_input(self, ocr_folder, image_path):
+        image_filename = os.path.basename(image_path)
         
-        files = os.listdir(ocr_folder)
-        ocr_file = os.path.join(ocr_folder, files[0])
-
+        ocr_filename = os.path.splitext(image_filename)[0] + ".xml"
+        
+        ocr_file = os.path.join(ocr_folder, ocr_filename)
+        
         tokens, bboxes, maxheight, maxwidth = self._parse_ocr_xml(ocr_file)
+        
         bboxes = self._normalize_bboxes(bboxes, maxwidth, maxheight)
 
-        image_files = os.listdir(image_folder)
-        image_file = image_files[0]
-        image_path = os.path.join(image_folder, image_file)
-
         image_data = {
-            "bboxes" : bboxes,
-            "tokens" : tokens,
-            "image_path" : image_path
+            "bboxes": bboxes,
+            "tokens": tokens,
+            "image_path": image_path
         }
 
         return image_data
