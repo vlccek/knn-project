@@ -12,6 +12,10 @@ import os
 from tqdm import tqdm
 
 
+class Ocr2JsonSettings:
+    distance_between_words = 0.1
+
+
 def is_on_same_line(bbox1, bbox2, min_distance=Ocr2JsonSettings.distance_between_words):
     """
     Check if two bounding boxes are on the same line based on their y-coordinates.
