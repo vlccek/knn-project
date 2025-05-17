@@ -10,7 +10,7 @@ This repository provides a comprehensive pipeline for creating datasets, trainin
 
 *   **`dataset generation/`:** Contains resources used in dataset generation process
     *   **Overview:** The heart of this project lies within its capacity to create high-quality datasets tailored for document understanding. The folder contain various tools and configurations
-    * the Dataset create by ML can be downloaded from [here](GT_jsons are available at [this repo](https://github.com/vlccek/knn-responses))
+    * the Dataset create by LLM can be downloaded from [here](GT_jsons are available at [this repo](https://github.com/vlccek/knn-responses))
 
 *   **`donut/`:** This Directory contain core model of donut which is a Document Understanding Transformer models and our extension of it. 
 
@@ -41,5 +41,5 @@ Folder containing all data and source codes for our PERO + LayoutLMv3 solution.
 
 2. `tar -xzvf models.tar.gz` 
 3. Make sure you have desired images in `images` folder to be processed. Image can be downloaded from merlin.
-4. `./run.sh`, the output folder is set to `./output/structure/` alog with the OCR outputs.
+4. `./run.sh`, the output folder is set to `./output/structure/` along with the OCR outputs.
 
