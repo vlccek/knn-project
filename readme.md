@@ -2,7 +2,7 @@
 
 *Advanced course on BUT FIT about NN and ML.* 
 
-This repository provides a comprehensive pipeline for creating datasets, training Document Understanding Transformer (Donut) models, and deploying them for inference. The project is organized into several key directories, each addressing a distinct aspect of the Donut workflow.
+This repository provides a comprehensive pipeline for creating datasets, training Document Understanding Transformer (Donut) models, and deploying them for inference. The project is organized into several key directories, each addressing a distinct aspect of the Donut workflow and the LayoutLMv3 implementation with same approach.
 
 ## Directory Structure
 
@@ -10,6 +10,7 @@ This repository provides a comprehensive pipeline for creating datasets, trainin
 
 *   **`dataset generation/`:** Contains resources used in dataset generation process
     *   **Overview:** The heart of this project lies within its capacity to create high-quality datasets tailored for document understanding. The folder contain various tools and configurations
+    * the Dataset create by ML can be downloaded from [here](GT_jsons are available at [this repo](https://github.com/vlccek/knn-responses))
 
 *   **`donut/`:** This Directory contain core model of donut which is a Document Understanding Transformer models and our extension of it. 
 
@@ -36,8 +37,9 @@ Folder containing all data and source codes for our PERO + LayoutLMv3 solution.
 
 ## How to run PERO + LAYOUTLMv3 inference
 
-1. Download configured Layout and PERO models from [this url](https://drive.google.com/drive/folders/1TLxB4ENP5-d_-lFLbSLXGB39YVsoovVX?usp=sharing) (`models.tar.gz`) and place the TAR in the `pipeline` folder.
+1. Download configured Layout and PERO models from [this url](https://drive.google.com/drive/folders/1TLxB4ENP5-d_-lFLbSLXGB39YVsoovVX?usp=sharing) (`models.tar.gz`) and place the TAR in the `pipeline` folder (you should generate 2 new folders).
 
 2. `tar -xzvf models.tar.gz` 
-3. Make sure you have some images in `images` folder to be processed
-4. `./run.sh`
+3. Make sure you have desired images in `images` folder to be processed. Image can be downloaded from merlin.
+4. `./run.sh`, the output folder is set to `./output/structure/` alog with the OCR outputs.
+
