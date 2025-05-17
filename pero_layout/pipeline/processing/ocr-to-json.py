@@ -13,7 +13,6 @@ from tqdm import tqdm
 
 
 class Ocr2JsonSettings:
-    can_be_number_from_more_word = True
     distance_between_words = 0.1
 
 
@@ -187,13 +186,13 @@ if __name__ == "__main__":
                     preds, image = LayoutProcessor().process_image_by_layout(batch_image_data)
                     all_preds.extend(preds)
 
-                    image.save(f"output/processed/layout_processed_image_{image_file}_{i}.jpg")
+                    # image.save(f"output/processed/layout_processed_image_{image_file}_{i}.jpg")
 
                 preds = all_preds
                 print(f"Prediction for {image_file} (total): {all_preds}")
             else:
                 preds, image = LayoutProcessor().process_image_by_layout(image_data)
-                image.save(f"layout_processed_image_{image_file}.jpg")
+                # image.save(f"layout_processed_image_{image_file}.jpg")
 
             print(f"Prediction for {image_file}: {preds}")
 
