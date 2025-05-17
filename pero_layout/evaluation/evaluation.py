@@ -283,5 +283,5 @@ if __name__ == "__main__":
     plt.figure(figsize=(10, 6))
     sns.histplot(df["ted_value"], bins=10, kde=True)
     plt.title('Histogram TED Values')
-    plt.savefig("ted_histogram.png")
+    plt.savefig("ted_histogram.pdf")
 
