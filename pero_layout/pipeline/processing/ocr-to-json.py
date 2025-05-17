@@ -9,6 +9,7 @@ import sys
 import math
 import numpy as np
 import os
+from tqdm import tqdm
 
 
 class Ocr2JsonSettings:
@@ -159,28 +160,32 @@ def map_repr_json(obj):
         "children": []
     }
 
+
 if __name__ == "__main__":
     ocr_folder = sys.argv[1]
     image_folder = sys.argv[2]
+    output_folder = "./output/structure/"
+    print("Starting Model output to JSON conversion...")
+    print(f"The output folder is: {os.path.abspath(output_folder)}")
 
-    for image_file in os.listdir(image_folder):
+    for image_file in tqdm(os.listdir(image_folder), desc="Zpracování obrázků"):
         print("Processing " + str(image_file))
         if image_file.endswith((".png", ".jpg", ".jpeg")):
             image_path = os.path.join(image_folder, image_file)
-            
+
             image_data = PeroProcessor().prepare_layout_input(ocr_folder, image_path)
 
             # batch processing of long sequences
             if len(image_data["tokens"]) > 200:
                 max_tokens = 200
                 all_preds = []
-                
+
                 num_batches = (len(image_data["tokens"]) + max_tokens - 1) // max_tokens
 
                 for i in range(num_batches):
                     start_idx = i * max_tokens
                     end_idx = min((i + 1) * max_tokens, len(image_data["tokens"]))
-                    
+
                     batch_image_data = {
                         "tokens": image_data["tokens"][start_idx:end_idx],
                         "bboxes": image_data["bboxes"][start_idx:end_idx],
@@ -190,22 +195,22 @@ if __name__ == "__main__":
                     preds, image = LayoutProcessor().process_image_by_layout(batch_image_data)
                     all_preds.extend(preds)
 
-                    image.save(f"layout_processed_image_{image_file}_{i}.jpg")
-                
+                    image.save(f"output/processed/layout_processed_image_{image_file}_{i}.jpg")
+
                 preds = all_preds
                 print(f"Prediction for {image_file} (total): {all_preds}")
             else:
                 preds, image = LayoutProcessor().process_image_by_layout(image_data)
                 image.save(f"layout_processed_image_{image_file}.jpg")
-                
+
             print(f"Prediction for {image_file}: {preds}")
-    
+
         # image.save("layout_processed_image.jpg")
         tokens = image_data["tokens"]
         bboxes = image_data["bboxes"]
 
         cleaned = [(class_name, bbox, token) for class_name, bbox, token in zip(preds, bboxes, tokens) if
-                class_name != "trash"]
+                   class_name != "trash"]
 
         avg_line_height2 = avg_line_height(cleaned)  # Average line height,
 
@@ -221,7 +226,6 @@ if __name__ == "__main__":
         for i, obj in enumerate(heading_main):
             json_data.append(map_repr_json(obj))
 
-
         heading_scd = match_heading_page_chapter(heading_scd, page_number, chapter_number)
 
         for i in heading_scd:
@@ -231,6 +235,11 @@ if __name__ == "__main__":
 
             json_data[parent_index]["children"].append(map_repr_json(i))
 
-        print(json.dumps(json_data))
+        # Save the JSON data to a file
+        output_file = os.path.join(output_folder, f"{os.path.splitext(image_file)[0]}.json")
+        os.makedirs(output_folder, exist_ok=True)
+        with open(output_file, "w") as f:
+            json.dump(json_data, f, ensure_ascii=False, indent=4)
 
 
+        # print(json.dumps(json_data))
