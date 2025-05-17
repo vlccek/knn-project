@@ -5,6 +5,7 @@ import torch
 
 class LayoutProcessor:
 
+    # converts bboxes from Layout format back to normal format
     def _denormalize_bboxes(self, bbox, original_width, original_height):
         return [
             original_width * (bbox[0] / 1000),
@@ -17,6 +18,7 @@ class LayoutProcessor:
         labels = ["trash", "kapitola", "cislo strany", "jiny nadpis", "jine cislo", "podnadpis", "nadpis v textu"]
         id2label = {v: k for v, k in enumerate(labels)}
 
+        # model initialization
         tokenizer = LayoutLMv3TokenizerFast.from_pretrained("microsoft/layoutlmv3-base", apply_ocr=False)
         processor = LayoutLMv3Processor.from_pretrained("microsoft/layoutlmv3-base", apply_ocr=False)
         model = LayoutLMv3ForTokenClassification.from_pretrained("layoutlmv3")
@@ -29,6 +31,7 @@ class LayoutProcessor:
 
         words = image_data["tokens"]
         boxes = image_data["bboxes"]
+        # inference
         encoding = processor(image, words, boxes=boxes, return_offsets_mapping=True, return_tensors="pt", truncation=True)
         offset_mapping = encoding.pop('offset_mapping')
 
@@ -73,6 +76,7 @@ class LayoutProcessor:
                 l_words.append(true_words[i])
                 bboxes.append(true_boxes[i])
 
+        # image visualization
         draw = ImageDraw.Draw(image, "RGBA")
         font = ImageFont.load_default()
 

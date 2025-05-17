@@ -2,6 +2,7 @@ import os
 import xml.etree.ElementTree as ET
 
 class PeroProcessor:
+    # extracts information from alto outputs
     def _parse_ocr_xml(self, ocr_file):
         tree = ET.parse(ocr_file)
         root = tree.getroot()
@@ -26,6 +27,7 @@ class PeroProcessor:
         
         return tokens, bboxes, maxheight, maxwidth
 
+    # converts bboxes to layout-friendly format
     def _normalize_bboxes(self, bboxes, original_width, original_height):
         normalized_bboxes = []
         for bbox in bboxes:
@@ -52,6 +54,7 @@ class PeroProcessor:
         
         return normalized_bboxes
 
+    # creates structure for layout inference
     def prepare_layout_input(self, ocr_folder, image_path):
         image_filename = os.path.basename(image_path)
         

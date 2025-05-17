@@ -37,9 +37,10 @@ Folder containing all data and source codes for our PERO + LayoutLMv3 solution.
 
 ## How to run PERO + LAYOUTLMv3 inference
 
-1. Download configured Layout and PERO models from [this url](https://drive.google.com/drive/folders/1TLxB4ENP5-d_-lFLbSLXGB39YVsoovVX?usp=sharing) (`models.tar.gz`) and place the TAR in the `pipeline` folder (you should generate 2 new folders).
+1. Download configured Layout and PERO models from [this url](https://drive.google.com/drive/folders/1TLxB4ENP5-d_-lFLbSLXGB39YVsoovVX?usp=sharing) (`models.tar.gz`) and place the TAR in the `pero_layout/pipeline` folder
 
-2. `tar -xzvf models.tar.gz` 
-3. Make sure you have desired images in `images` folder to be processed. Image can be downloaded from merlin.
-4. `./run.sh`, the output folder is set to `./output/structure/` along with the OCR outputs.
+2. `tar -xzvf models.tar.gz`, after this step, you should have `layoutlmv3` and `pero-ocr` folders in the `pipeline` folder
+3. Make sure you have desired images in `images` folder to be processed. Some sample images are included.
+4. `pip install -r requirements.txt`
+5. `./run.sh`, the output folder is set to `./output/structure/` along with the OCR outputs.
 

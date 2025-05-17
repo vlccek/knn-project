@@ -18,9 +18,6 @@ class Ocr2JsonSettings:
 
 
 def is_on_same_line(bbox1, bbox2, min_distance=Ocr2JsonSettings.distance_between_words):
-    """
-    Check if two bounding boxes are on the same line based on their y-coordinates.
-    """
     y1 = bbox1[1]
     y2 = bbox2[1]
     height1 = bbox1[3] - bbox1[1]
@@ -95,7 +92,7 @@ def find_nearest(src, list_of_targets):
 
 
 def distance_function(bbox1, bbox2):
-    # Calculate the distance between the centers of two bounding boxes
+    # calculate the distance between the centers of two bounding boxes
     center_y1 = (bbox1[1] + bbox1[3]) / 2
     center_y2 = (bbox2[1] + bbox2[3]) / 2
 
@@ -131,9 +128,6 @@ def find_element_on_same_line(src, list_of_targets):
 
 
 def match_heading_page_chapter(headings, pages, chapters):
-    """
-    Match headings with their corresponding pages and chapters.
-    """
     output = []
 
     for i, obj in enumerate(headings):
@@ -146,9 +140,6 @@ def match_heading_page_chapter(headings, pages, chapters):
 
 
 def map_repr_json(obj):
-    """
-    Map the object to a JSON representation.
-    """
     title = obj[0][2]
     page = obj[1][2] if obj[1] else ""
     chapter = obj[2][2] if obj[2] else ""
@@ -167,6 +158,7 @@ if __name__ == "__main__":
     output_folder = "./output/structure/"
     print("Starting Model output to JSON conversion...")
     print(f"The output folder is: {os.path.abspath(output_folder)}")
+    os.makedirs("./output/processed", exist_ok=True)
 
     for image_file in tqdm(os.listdir(image_folder), desc="Zpracování obrázků"):
         print("Processing " + str(image_file))
@@ -205,14 +197,11 @@ if __name__ == "__main__":
 
             print(f"Prediction for {image_file}: {preds}")
 
-        # image.save("layout_processed_image.jpg")
         tokens = image_data["tokens"]
         bboxes = image_data["bboxes"]
 
         cleaned = [(class_name, bbox, token) for class_name, bbox, token in zip(preds, bboxes, tokens) if
                    class_name != "trash"]
-
-        avg_line_height2 = avg_line_height(cleaned)  # Average line height,
 
         headings = merge_title_words(cleaned, "kapitola")
         heading_scd = merge_title_words(cleaned, "jiny nadpis")
@@ -235,11 +224,8 @@ if __name__ == "__main__":
 
             json_data[parent_index]["children"].append(map_repr_json(i))
 
-        # Save the JSON data to a file
+        # save the JSON data to a file
         output_file = os.path.join(output_folder, f"{os.path.splitext(image_file)[0]}.json")
         os.makedirs(output_folder, exist_ok=True)
         with open(output_file, "w") as f:
             json.dump(json_data, f, ensure_ascii=False, indent=4)
-
-
-        # print(json.dumps(json_data))
